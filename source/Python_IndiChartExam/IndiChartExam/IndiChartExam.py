@@ -6,11 +6,12 @@ from PyQt5.QAxContainer import *
 from pandas import Series, DataFrame
 import matplotlib.pyplot as plt
 import pandas as pd
-import matplotlib.finance as matfin
+import mpl_finance as matfin
 import matplotlib.ticker as ticker
 
-#import mpl_finance as matfin           설치를 따로 해야 쓸 수 있음
+import numpy as np
 
+#import mpl_finance as matfin           설치를 따로 해야 쓸 수 있음
 
 class MyWindow(QMainWindow):
     def __init__(self):
@@ -63,7 +64,7 @@ class MyWindow(QMainWindow):
         TRName = "SC"
         jongmok = item.text().split(':')
         self.CommTR.dynamicCall("SetQueryName(QString)", TRName)
-        self.CommTR.dynamicCall("SetSingleData(int, QString)", 0, jongmok[0])
+        self.CommTR.dynamicCall("SetSingleData(int, QString)", 0, jongmok[0]) # 005933:삼성전자
         nResult = self.CommTR.dynamicCall("RequestData()")
         self.rqid[nResult] = TRName
 
@@ -133,7 +134,7 @@ class MyWindow(QMainWindow):
         value[0] = pd.to_datetime(value[0])
         daeshin = {'open': value[2], 'high': value[3], 'low': value[4], 'close': value[5]}
         daeshin_day = DataFrame(daeshin, columns=['open', 'high', 'low', 'close'], index=value[0])
-
+        
         plt.plot(daeshin_day['close'])
         plt.show()
 
@@ -160,7 +161,7 @@ class MyWindow(QMainWindow):
         value[0] = pd.to_datetime(value[0])
         daeshin = {'open': value[2], 'high': value[3], 'low': value[4], 'close': value[5]}
         daeshin_day = DataFrame(daeshin, columns=['open', 'high', 'low', 'close'], index=value[0])
-
+        reversed_daeshin_day = daeshin_day[::-1]
         fig = plt.figure(figsize=(12, 8))
         ax = fig.add_subplot(111)
 
@@ -169,15 +170,21 @@ class MyWindow(QMainWindow):
         #for day in daeshin_day.index:
         #    namelist.append(day.strftime('%d'))
         #daylist = range(len(daeshin_day))
-        for i, day in enumerate(daeshin_day.index):
+        for i, day in enumerate(reversed_daeshin_day.index):
             if day.dayofweek == 0:
                 daylist.append(i)
                 namelist.append(day.strftime('%m/%d(Mon)'))
 
+        
         ax.xaxis.set_major_locator(ticker.FixedLocator(daylist))
         ax.xaxis.set_major_formatter(ticker.FixedFormatter(namelist))
+        
+        def passDtype(n):
+            return np.array(n, dtype=float)
+        
+        
 
-        matfin.candlestick2_ohlc(ax, daeshin_day['open'], daeshin_day['high'], daeshin_day['low'], daeshin_day['close'], width=0.5, colorup='r', colordown='b')
+        matfin.candlestick2_ohlc(ax, passDtype(reversed_daeshin_day['open']), passDtype(reversed_daeshin_day['high']), passDtype(reversed_daeshin_day['low']), passDtype(reversed_daeshin_day['close']), width=0.5, colorup='r', colordown='b')
         plt.grid()
         plt.show()
 
