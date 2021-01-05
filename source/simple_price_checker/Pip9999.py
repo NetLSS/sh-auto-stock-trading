@@ -46,6 +46,7 @@ class WindowClass(QMainWindow, form_class) :
         self.setupUi(self)
 
         self.RequestRealTimeStock_click_flag = False
+        self.ReceiveRealData_click_flag = False
         
         # #버튼에 기능을 연결하는 코드
         # self.btn_1.clicked.connect(self.button1Function)
@@ -96,6 +97,13 @@ class WindowClass(QMainWindow, form_class) :
         self.rqid.__delitem__(nID)
 
     def ReceiveRealData(self, RealType):
+        
+        self.ReceiveRealData_click_flag = not slef.ReceiveRealData_click_flag
+        if self.ReceiveRealData_click_flag:
+            self.pushButton_Re.setText("RE!")
+        else:
+            self.pushButton_Re.setText("RE")
+
 
         if RealType == "SC":
             DATA = {}
