@@ -10,12 +10,25 @@ from pandas import Series, DataFrame
 import pandas as pd
 import numpy as np
 
+
+import os
+import win32com.shell.shell as shell
+
 '''
     신한아이 인디 국내주식 예제입니다:
     코드를 입력하시고 Search 버튼을 누르시면
     종목코드에 해당하는 일별 차트 데이터 100개와
     종목 가격정보를 조회하여 출력합니다.
 '''
+
+
+ASADMIN = 'asadmin'
+
+if sys.argv[-1] != ASADMIN:
+    script = os.path.abspath(sys.argv[0])
+    params = ' '.join([script] + sys.argv[1:] + [ASADMIN])
+    shell.ShellExecuteEx(lpVerb='runas', lpFile=sys.executable, lpParameters=params)
+    sys.exit(0)
 
 class IndiWindow(QMainWindow):
     def __init__(self):
@@ -46,7 +59,6 @@ class IndiWindow(QMainWindow):
         btnResearch = QPushButton("Search", self)
         btnResearch.setGeometry(85, 20, 50, 20)
         btnResearch.clicked.connect(self.btn_Search)
-
 
     def btn_Search(self):
         Symbol = self.edSymbol.text()

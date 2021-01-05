@@ -13,6 +13,17 @@ import numpy as np
 
 #import mpl_finance as matfin           설치를 따로 해야 쓸 수 있음
 
+import os
+import win32com.shell.shell as shell
+
+ASADMIN = 'asadmin'
+
+if sys.argv[-1] != ASADMIN:
+    script = os.path.abspath(sys.argv[0])
+    params = ' '.join([script] + sys.argv[1:] + [ASADMIN])
+    shell.ShellExecuteEx(lpVerb='runas', lpFile=sys.executable, lpParameters=params)
+    sys.exit(0)
+
 class MyWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -54,6 +65,16 @@ class MyWindow(QMainWindow):
         self.CommTR.dynamicCall("SetQueryName(QString)", "stock_mst")
         nResult = self.CommTR.dynamicCall("RequestData()")
         self.rqid[nResult] = "stock_mst"
+
+        self.CommTR.dynamicCall("SetQueryName(QString)", "SB")
+        self.CommTR.dynamicCall("SetSingleData(int, QString)", 0, "055550") # 005933:삼성전자
+        nResult = self.CommTR.dynamicCall("RequestData()")
+        self.rqid[nResult] = "SB"
+
+        self.CommTR.dynamicCall("SetQueryName(QString)", "SC")
+        self.CommTR.dynamicCall("SetSingleData(int, QString)", 0, "055550") # 005933:삼성전자
+        nResult = self.CommTR.dynamicCall("RequestData()")
+        self.rqid[nResult] = "SC"
 
     def RequestTR(self):
         self.CommReal.dynamicCall("UnRequestRTRegAll()")
@@ -114,6 +135,12 @@ class MyWindow(QMainWindow):
                     name = self.CommTR.dynamicCall("GetMultiData(int, QString)", i, 3)
                     codelist.append(code + " : " + name)
             self.listWidget.addItems(codelist)
+        elif TRName == "SB":
+            print("SB")
+            codelist = []
+            count = self.CommTR.dynamicCall("GetMultiRowCount()")
+            종목 = self.CommTR.dynamicCall("GetSingleData(int)", 5)
+            print(f"SB: {count} {종목}")
 
     def ReceiveRealData(self):
         for i in range (1, 10):
@@ -167,9 +194,11 @@ class MyWindow(QMainWindow):
 
         namelist = []
         daylist = []
+
         #for day in daeshin_day.index:
         #    namelist.append(day.strftime('%d'))
         #daylist = range(len(daeshin_day))
+        
         for i, day in enumerate(reversed_daeshin_day.index):
             if day.dayofweek == 0:
                 daylist.append(i)
@@ -181,8 +210,6 @@ class MyWindow(QMainWindow):
         
         def passDtype(n):
             return np.array(n, dtype=float)
-        
-        
 
         matfin.candlestick2_ohlc(ax, passDtype(reversed_daeshin_day['open']), passDtype(reversed_daeshin_day['high']), passDtype(reversed_daeshin_day['low']), passDtype(reversed_daeshin_day['close']), width=0.5, colorup='r', colordown='b')
         plt.grid()
