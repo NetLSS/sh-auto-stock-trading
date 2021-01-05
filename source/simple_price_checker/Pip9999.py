@@ -17,7 +17,7 @@ import numpy as np
 import win32com.shell.shell as shell
 
 
-# 관리자 권한 획득
+# 관리자 권한 획득 : pip install pywin32
 if True:
     ASADMIN = 'asadmin'
 
