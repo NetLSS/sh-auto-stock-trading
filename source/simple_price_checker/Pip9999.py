@@ -38,7 +38,8 @@ form_class = uic.loadUiType("sslee.ui")[0]
 # 종목
 stock_item_1 = "017180" # 명문 제약
 stock_item_2 = "058820" # CMG 제약
- 
+user_memo = "[1]: 6,577    [2]: 5,704"
+
 #화면을 띄우는데 사용되는 Class 선언
 class WindowClass(QMainWindow, form_class) :
     def __init__(self) :
@@ -63,6 +64,8 @@ class WindowClass(QMainWindow, form_class) :
         self.pushButton_Re.clicked.connect(self.pushButton_Re_clicked)
          # TR ID를 저장해놓고 처리할 딕셔너리 생성
         self.rqid = {}
+
+        self.lineEdit_Memo.setText(user_memo)
     
     
 
@@ -97,7 +100,7 @@ class WindowClass(QMainWindow, form_class) :
         self.rqid.__delitem__(nID)
 
     def ReceiveRealData(self, RealType):
-        
+
         self.ReceiveRealData_click_flag = not slef.ReceiveRealData_click_flag
         if self.ReceiveRealData_click_flag:
             self.pushButton_Re.setText("RE!")
