@@ -16,6 +16,7 @@ import numpy as np
 
 import win32com.shell.shell as shell
 
+# TODO: 자동 로그인 https://wikidocs.net/22706 
 
 # 관리자 권한 획득 : pip install pywin32
 if True:
